@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #141414; color: white; padding: 20px; }
+      .search-box { margin-bottom: 30px; }
+      input { padding: 12px; width: 250px; border-radius: 20px; border: none; outline: none; }
+      button { padding: 12px 25px; border-radius: 20px; border: none; background: #E50914; color: white; font-weight: bold; cursor: pointer; margin-left: 10px; }
+      button:hover { background: #b20710; }
+      #status { color: #aaa; margin-top: 10px; font-size: 0.9em; }
+      iframe { border: 2px solid #333; border-radius: 8px; background: #000; }
+    </style>
+  </head>
+  <body>
+    <div class="search-box">
+      <input type="text" id="userInput" placeholder="Type movie title...">
+      <button onclick="runSearch()">Search</button>
+      <div id="status">Ready</div>
+    </div>
+
+    <div id="videoContainer"></div>
+
+    <script>
+      function runSearch() {
+        const title = document.getElementById('userInput').value;
+        const status = document.getElementById('status');
+        const container = document.getElementById('videoContainer');
+        
+        if(!title) return;
+
+        status.innerText = "Updating Spreadsheet...";
+        
+        // Calls the .gs function
+        google.script.run.withSuccessHandler(function(id) {
+          if (id && id !== "Not Found" && id !== "Error") {
+            status.innerText = "Playing ID: " + id;
+            container.innerHTML = `<iframe 
+    src="https://vidfast.pro/movie/${id}?autoPlay=true" 
+    width="100%" 
+    height="500px" 
+    frameborder="0" 
+    allow="autoplay; encrypted-media; fullscreen; picture-in-picture" 
+    allowfullscreen>
+</iframe>`;
+          } else {
+            status.innerText = "Could not find an ID for that title.";
+            container.innerHTML = "";
+          }
+        }).processSearch(title);
+      }
+    </script>
+  </body>
+</html>
